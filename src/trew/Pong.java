@@ -179,17 +179,20 @@ public class Pong extends BasicGame {
 		}
 		
 		// move computer paddle
-		int distanceToBallY = (int)Math.abs(paddleCPU.getCenterY() - ball.getCenterY());
-		if (distanceToBallY > moveSpeed) {
-			if (paddleCPU.getCenterY() < ball.getCenterY()) {
-				paddleCPU.setY(paddleCPU.getY() + moveSpeed); 
-			} else {
-				paddleCPU.setY(paddleCPU.getY() - moveSpeed); 
-			}
+		float distanceToBallY = paddleCPU.getCenterY() - ball.getCenterY();
+		if (distanceToBallY < -moveSpeed) {
+			paddleCPU.setY(paddleCPU.getY() + moveSpeed);
+		} else if (distanceToBallY > moveSpeed) {
+			paddleCPU.setY(paddleCPU.getY() - moveSpeed);
 		} else {
 			paddleCPU.setCenterY(ball.getCenterY());
 		}
-			
+		if (paddleCPU.getMaxY() > height) {
+			paddleCPU.setY(height - paddleCPU.getHeight());
+		} else if (paddleCPU.getMinY() < 0) {
+			paddleCPU.setY(0);
+		}
+
 		// move ball
 		ball.setLocation(ball.getX() + ballVelocity.getX(), ball.getY() + ballVelocity.getY());
 		
