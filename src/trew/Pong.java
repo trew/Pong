@@ -97,7 +97,8 @@ public class Pong extends BasicGame {
 	private void startGame() {
 		paddlePlayer.setLocation(5, height / 2 - 40);
 		paddleCPU.setLocation(width - 15, height / 2 - 40);
-		ball.setLocation(width / 2, height / 2);
+		ball.setCenterX(width / 2);
+		ball.setCenterY(height / 2);
 		ballVelocity = new Vector2f(0, 0);
 		serveReceiver = PLAYER; //player
 		scoreCPU = 0;
@@ -292,6 +293,10 @@ public class Pong extends BasicGame {
 		String scoreString = scorePlayer + " - " + scoreCPU;
 		int scoreStringWidth = container.getDefaultFont().getWidth(scoreString);
 		g.drawString(scoreString, width / 2- scoreStringWidth / 2, 5);
+
+		for (int y = 0; y < height; y += 30) {
+			g.fillRect(width / 2 - 1, y, 3, 15);
+		}
 
 		if (waitingForKeyPress) {
 			int messageWidth = container.getDefaultFont().getWidth(message);
