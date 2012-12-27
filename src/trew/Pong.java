@@ -77,6 +77,12 @@ public class Pong extends BasicGame {
 
 	/** Indicate whether the game is paused or not */
 	private boolean paused = false;
+
+	/** Whether we're waiting for a key press */
+	private boolean waitingForKeyPress = true;
+
+	/** A message to display */
+	private String message = "Press space to start";
 	
 	/** A randomizer */
 	private Random randomizer;
@@ -86,6 +92,16 @@ public class Pong extends BasicGame {
 	 */
 	public Pong() {
 		super(title);
+	}
+
+	private void startGame() {
+		paddlePlayer.setLocation(5, height / 2 - 40);
+		paddleCPU.setLocation(width - 15, height / 2 - 40);
+		ball.setLocation(width / 2, height / 2);
+		ballVelocity = new Vector2f(0, 0);
+		serveReceiver = PLAYER; //player
+		scoreCPU = 0;
+		scorePlayer = 0;
 	}
 
 	/**
@@ -100,6 +116,7 @@ public class Pong extends BasicGame {
 		ballVelocity = new Vector2f(-3, 1);
 		serveReceiver = PLAYER; //player
 		randomizer = new Random();
+		startGame();
 	}
 
 	/**
@@ -127,7 +144,18 @@ public class Pong extends BasicGame {
 			paused = !paused;
 		}
 		
-		if (paused) { return; }
+		if (waitingForKeyPress) {
+			if (container.getInput().isKeyPressed(Input.KEY_SPACE)) {
+				waitingForKeyPress = false;
+				startGame();
+			} else {
+				return;
+			}
+		}
+
+		if (paused) {
+			return;
+		}
 		
 		// serve?
 		if (serveReceiver != NONE) {
@@ -168,9 +196,15 @@ public class Pong extends BasicGame {
 		if (ball.getMinX() <= 0) {
 			scoreCPU++;
 			serveReceiver = COMPUTER;
+			if (scoreCPU >= 10) {
+				notifyLoss();
+			}
 		} else if (ball.getMaxX() >= width) {
 			scorePlayer++;
 			serveReceiver = PLAYER;
+			if (scorePlayer >= 10) {
+				notifyWin();
+			}
 		}
 		
 		// bounce against top and bottom walls
@@ -234,6 +268,18 @@ public class Pong extends BasicGame {
 		ballVelocity.x = ballVx * BALLSPEED;
 		ballVelocity.y = ballVy * BALLSPEED;
 	}
+
+	private void notifyLoss()
+	{
+		waitingForKeyPress = true;
+		message = "You lost. Press space to play again";
+	}
+
+	private void notifyWin()
+	{
+		waitingForKeyPress = true;
+		message = "You win! Press space to play again";
+	}
 		
 	@Override
 	public void render(GameContainer container, Graphics g)
@@ -246,6 +292,11 @@ public class Pong extends BasicGame {
 		String scoreString = scorePlayer + " - " + scoreCPU;
 		int scoreStringWidth = container.getDefaultFont().getWidth(scoreString);
 		g.drawString(scoreString, width / 2- scoreStringWidth / 2, 5);
+
+		if (waitingForKeyPress) {
+			int messageWidth = container.getDefaultFont().getWidth(message);
+			g.drawString(message, width / 2 - messageWidth / 2, height - height / 3);
+		}
 	}
 
 	/**
