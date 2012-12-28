@@ -46,10 +46,8 @@ public class Pong extends BasicGame {
 	/** The computer's score */
 	private int scoreCPU;
 
-	/** Who is going to receive the serve?
-	 * 0 = None
-	 * 1 = Player
-	 * 2 = Computer
+	/**
+	 * Who is going to receive the serve? 0 = None 1 = Player 2 = Computer
 	 */
 	private int serveReceiver;
 	private static final int NONE = 0;
@@ -66,9 +64,8 @@ public class Pong extends BasicGame {
 	private static final float BALLSPEED = 10.0f;
 
 	/**
-	 * The time for cooldown between ball collisions
-	 * A very short cooldown to fix a bug where the ball
-	 * would be stuck between the wall and the paddle
+	 * The time for cooldown between ball collisions A very short cooldown to
+	 * fix a bug where the ball would be stuck between the wall and the paddle
 	 */
 	private long collisionCooldown;
 
@@ -100,7 +97,7 @@ public class Pong extends BasicGame {
 		ball.setCenterX(width / 2);
 		ball.setCenterY(height / 2);
 		ballVelocity = new Vector2f(0, 0);
-		serveReceiver = PLAYER; //player
+		serveReceiver = PLAYER;
 		scoreCPU = 0;
 		scorePlayer = 0;
 	}
@@ -115,24 +112,24 @@ public class Pong extends BasicGame {
 		paddleCPU = new RoundedRectangle(width - 15, height / 2 - 40, 10, 80, 3);
 		ball = new Circle(width / 2, height / 2, 6);
 		ballVelocity = new Vector2f(-3, 1);
-		serveReceiver = PLAYER; //player
+		serveReceiver = PLAYER; // player
 		randomizer = new Random();
 		startGame();
 	}
 
 	/**
-	 * Serve the ball in the direction of the serveReceiver.
-	 * The ball will be launched from somewhere between 1/4
-	 * to 3/4 of the window height. It will have a random
-	 * speed between 0.5*BALLSPEED and 1*BALLSPEED.
+	 * Serve the ball in the direction of the serveReceiver. The ball will be
+	 * launched from somewhere between 1/4 to 3/4 of the window height. It will
+	 * have a random speed between 0.5*BALLSPEED and 1*BALLSPEED.
 	 */
 	private void serve() {
 		ball.setCenterX(width / 2);
 		// randomize a location from 1/4 to 3/4 of the total height
 		ball.setCenterY(height - height / 4 - randomizer.nextInt(height / 2));
 		// random between 1 and 2
-		float divider = (float)randomizer.nextDouble() + 1.0f;
-		ballVelocity.x = serveReceiver == PLAYER ? -BALLSPEED / divider : BALLSPEED / divider;
+		float divider = (float) randomizer.nextDouble() + 1.0f;
+		ballVelocity.x = serveReceiver == PLAYER ? -BALLSPEED / divider
+				: BALLSPEED / divider;
 		ballVelocity.y = 1;
 		serveReceiver = NONE;
 	}
@@ -194,7 +191,8 @@ public class Pong extends BasicGame {
 		}
 
 		// move ball
-		ball.setLocation(ball.getX() + ballVelocity.getX(), ball.getY() + ballVelocity.getY());
+		ball.setLocation(ball.getX() + ballVelocity.getX(), ball.getY()
+				+ ballVelocity.getY());
 
 		// detect score
 		if (ball.getMinX() <= 0) {
@@ -225,7 +223,7 @@ public class Pong extends BasicGame {
 			if (ball.intersects(paddlePlayer)) {
 				bounceOnPaddle(paddlePlayer);
 				collisionCooldown = COLLISIONCOOLDOWNTIME;
-			} else if (ball.intersects(paddleCPU)){
+			} else if (ball.intersects(paddleCPU)) {
 				bounceOnPaddle(paddleCPU);
 				collisionCooldown = COLLISIONCOOLDOWNTIME;
 			}
@@ -233,21 +231,25 @@ public class Pong extends BasicGame {
 	}
 
 	/**
-	 * Calculate the direction of the ball when bouncing on
-	 * a paddle
+	 * Calculate the direction of the ball when bouncing on a paddle
 	 *
-	 * @param paddle The paddle hitting the ball
+	 * @param paddle
+	 *            The paddle hitting the ball
 	 */
 	private void bounceOnPaddle(Shape paddle) {
-		// get the distance from the center of the paddle to the center of the ball
+		// get the distance from the center of the paddle to the center of the
+		// ball
 		// this ranges from (-PaddleHeight / 2) to (PaddleHeight / 2).
-		float distanceToPaddleCenterY = (paddle.getCenterY() - ball.getCenterY());
+		float distanceToPaddleCenterY = (paddle.getCenterY() - ball
+				.getCenterY());
 
 		// get a normalized value, ranges from -1 to 1, making Paddle Height
 		// trivial
 		float normalizedY = distanceToPaddleCenterY / (paddle.getHeight() / 2);
-		if (normalizedY > 1) normalizedY = 1;
-		if (normalizedY < -1) normalizedY = -1;
+		if (normalizedY > 1)
+			normalizedY = 1;
+		if (normalizedY < -1)
+			normalizedY = -1;
 
 		// get the angle which the ball will fly
 		// ranges from -MAXBOUNCEANGLE to MAXBOUNCEANGLE
@@ -255,7 +257,7 @@ public class Pong extends BasicGame {
 
 		// calculate the horizontal speed based on where on the paddle
 		// we hit. Ranges from 0.7 to 1.0.
-		float ballVx = Math.abs((float)Math.sin(bounceAngle));
+		float ballVx = Math.abs((float) Math.sin(bounceAngle));
 		if (ballVx > 0 && ballVx < 0.7f) {
 			ballVx = 0.7f;
 		}
@@ -265,22 +267,27 @@ public class Pong extends BasicGame {
 			ballVx = -ballVx;
 		}
 		// Calculate the vertical speed based on where on the paddle we hit.
-		// Since bounce angle is -75 to 75, it will range from -0.9659~ to 0.9659
-		float ballVy = (float)-Math.sin(bounceAngle);
+		// Since bounce angle is -75 to 75, it will range from -0.9659~ to
+		// 0.9659
+		float ballVy = (float) -Math.sin(bounceAngle);
 
 		// multiply with the ball speed
 		ballVelocity.x = ballVx * BALLSPEED;
 		ballVelocity.y = ballVy * BALLSPEED;
 	}
 
-	private void notifyLoss()
-	{
+	/**
+	 * Notification that the player lost
+	 */
+	private void notifyLoss() {
 		waitingForKeyPress = true;
 		message = "You lost. Press space to play again";
 	}
 
-	private void notifyWin()
-	{
+	/**
+	 * Notification that the player won
+	 */
+	private void notifyWin() {
 		waitingForKeyPress = true;
 		message = "You win! Press space to play again";
 	}
@@ -295,7 +302,7 @@ public class Pong extends BasicGame {
 		// center the score on top
 		String scoreString = scorePlayer + " - " + scoreCPU;
 		int scoreStringWidth = container.getDefaultFont().getWidth(scoreString);
-		g.drawString(scoreString, width / 2- scoreStringWidth / 2, 5);
+		g.drawString(scoreString, width / 2 - scoreStringWidth / 2, 5);
 
 		for (int y = 0; y < height; y += 30) {
 			g.fillRect(width / 2 - 1, y, 3, 15);
@@ -303,15 +310,17 @@ public class Pong extends BasicGame {
 
 		if (waitingForKeyPress) {
 			int messageWidth = container.getDefaultFont().getWidth(message);
-			g.drawString(message, width / 2 - messageWidth / 2, height - height / 3);
+			g.drawString(message, width / 2 - messageWidth / 2, height - height
+					/ 3);
 		}
 	}
 
 	/**
-	 * The main entry point of the game. Sets up the
-	 * application and gets the game loop going.
+	 * The main entry point of the game. Sets up the application and gets the
+	 * game loop going.
 	 *
-	 * @param args Any arguments passed
+	 * @param args
+	 *            Any arguments passed
 	 */
 	public static void main(String[] args) {
 		try {
