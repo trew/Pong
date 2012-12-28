@@ -77,6 +77,9 @@ public class GameplayState extends BasicGameState {
 	/** A message to display */
 	private String message = "Press space to start";
 
+	/** Indicator whether we go to menu after key press */
+	private boolean goToMenu;
+
 	/** A randomizer */
 	private Random randomizer;
 
@@ -89,6 +92,7 @@ public class GameplayState extends BasicGameState {
 	}
 
 	private void startGame() {
+		goToMenu = false;
 		paddlePlayer.setLocation(5, height / 2 - 40);
 		paddleCPU.setLocation(width - 15, height / 2 - 40);
 		ball.setCenterX(width / 2);
@@ -143,6 +147,9 @@ public class GameplayState extends BasicGameState {
 		if (waitingForKeyPress) {
 			if (container.getInput().isKeyPressed(Input.KEY_SPACE)) {
 				waitingForKeyPress = false;
+				if (goToMenu) {
+					game.enterState(0);
+				}
 				startGame();
 			} else {
 				return;
@@ -279,7 +286,8 @@ public class GameplayState extends BasicGameState {
 	 */
 	private void notifyLoss() {
 		waitingForKeyPress = true;
-		message = "You lost. Press space to play again";
+		message = "You lost";
+		goToMenu = true;
 	}
 
 	/**
@@ -287,7 +295,8 @@ public class GameplayState extends BasicGameState {
 	 */
 	private void notifyWin() {
 		waitingForKeyPress = true;
-		message = "You win! Press space to play again";
+		message = "You win!";
+		goToMenu = true;
 	}
 
 	@Override
