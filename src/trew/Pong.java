@@ -7,7 +7,7 @@ import org.newdawn.slick.geom.*;
 
 /**
  * A classic game of Pong.
- * 
+ *
  * @author Samuel Andersson
  *
  */
@@ -15,37 +15,37 @@ public class Pong extends BasicGame {
 
 	/** The width of the game window */
 	private static int width = 800;
-	
+
 	/** The height of the game window */
 	private static int height = 600;
-	
+
 	/** Whether we are playing in fullscreen or not */
 	private static boolean fullscreen = false;
-	
+
 	/** The game title */
 	private static String title = "Pong";
-	
+
 	/** The target frame rate */
 	private static int fpsLimit = 60;
-	
+
 	/** The player's paddle */
 	private Rectangle paddlePlayer;
-	
+
 	/** The computer's paddle */
 	private Rectangle paddleCPU;
-	
+
 	/** The ball */
 	private Circle ball;
-	
+
 	/** The velocity of the ball */
 	private Vector2f ballVelocity;
-	
+
 	/** The player's score */
 	private int scorePlayer;
-	
+
 	/** The computer's score */
 	private int scoreCPU;
-	
+
 	/** Who is going to receive the serve?
 	 * 0 = None
 	 * 1 = Player
@@ -55,23 +55,23 @@ public class Pong extends BasicGame {
 	private static final int NONE = 0;
 	private static final int PLAYER = 1;
 	private static final int COMPUTER = 2;
-	
-	/** The move speed of the paddles */ 
-	private float moveSpeed = 6.0f;
-	
+
+	/** The move speed of the paddles */
+	private final float moveSpeed = 6.0f;
+
 	/** The max angle for the ball when bouncing of a paddle */
 	private static final float MAXBOUNCEANGLE = 75.0f;
-	
+
 	/** The max speed of the ball */
 	private static final float BALLSPEED = 10.0f;
-	
+
 	/**
-	 * The time for cooldown between ball collisions 
+	 * The time for cooldown between ball collisions
 	 * A very short cooldown to fix a bug where the ball
-	 * would be stuck between the wall and the paddle 
+	 * would be stuck between the wall and the paddle
 	 */
 	private long collisionCooldown;
-	
+
 	/** The collision cooldown time in milliseconds */
 	private static final int COLLISIONCOOLDOWNTIME = 50;
 
@@ -83,10 +83,10 @@ public class Pong extends BasicGame {
 
 	/** A message to display */
 	private String message = "Press space to start";
-	
+
 	/** A randomizer */
 	private Random randomizer;
-	
+
 	/**
 	 * Construct a new game of Pong
 	 */
@@ -124,7 +124,7 @@ public class Pong extends BasicGame {
 	 * Serve the ball in the direction of the serveReceiver.
 	 * The ball will be launched from somewhere between 1/4
 	 * to 3/4 of the window height. It will have a random
-	 * speed between 0.5*BALLSPEED and 1*BALLSPEED.  
+	 * speed between 0.5*BALLSPEED and 1*BALLSPEED.
 	 */
 	private void serve() {
 		ball.setCenterX(width / 2);
@@ -136,15 +136,15 @@ public class Pong extends BasicGame {
 		ballVelocity.y = 1;
 		serveReceiver = NONE;
 	}
-	
+
 	@Override
 	public void update(GameContainer container, int delta)
 			throws SlickException {
-		
+
 		if (container.getInput().isKeyPressed(Input.KEY_P)) {
 			paused = !paused;
 		}
-		
+
 		if (waitingForKeyPress) {
 			if (container.getInput().isKeyPressed(Input.KEY_SPACE)) {
 				waitingForKeyPress = false;
@@ -157,12 +157,12 @@ public class Pong extends BasicGame {
 		if (paused) {
 			return;
 		}
-		
+
 		// serve?
 		if (serveReceiver != NONE) {
 			serve();
 		}
-		
+
 		// get input and move player paddle
 		if (container.getInput().isKeyDown(Input.KEY_UP)) {
 			if (paddlePlayer.getMinY() > moveSpeed)
@@ -177,7 +177,7 @@ public class Pong extends BasicGame {
 				paddlePlayer.setY(height - paddlePlayer.getHeight());
 			}
 		}
-		
+
 		// move computer paddle
 		float distanceToBallY = paddleCPU.getCenterY() - ball.getCenterY();
 		if (distanceToBallY < -moveSpeed) {
@@ -195,7 +195,7 @@ public class Pong extends BasicGame {
 
 		// move ball
 		ball.setLocation(ball.getX() + ballVelocity.getX(), ball.getY() + ballVelocity.getY());
-		
+
 		// detect score
 		if (ball.getMinX() <= 0) {
 			scoreCPU++;
@@ -210,14 +210,14 @@ public class Pong extends BasicGame {
 				notifyWin();
 			}
 		}
-		
+
 		// bounce against top and bottom walls
 		if (ball.getMinY() < 0 && ballVelocity.y < 0) {
 			ballVelocity.y = -ballVelocity.y;
 		} else if (ball.getMaxY() > height && ballVelocity.y > 0) {
 			ballVelocity.y = -ballVelocity.y;
 		}
-		
+
 		// bounce against paddles
 		if (collisionCooldown > 0) {
 			collisionCooldown -= delta;
@@ -235,34 +235,34 @@ public class Pong extends BasicGame {
 	/**
 	 * Calculate the direction of the ball when bouncing on
 	 * a paddle
-	 * 
+	 *
 	 * @param paddle The paddle hitting the ball
 	 */
 	private void bounceOnPaddle(Shape paddle) {
 		// get the distance from the center of the paddle to the center of the ball
 		// this ranges from (-PaddleHeight / 2) to (PaddleHeight / 2).
 		float distanceToPaddleCenterY = (paddle.getCenterY() - ball.getCenterY());
-		
-		// get a normalized value, ranges from -1 to 1, making Paddle Height 
+
+		// get a normalized value, ranges from -1 to 1, making Paddle Height
 		// trivial
 		float normalizedY = distanceToPaddleCenterY / (paddle.getHeight() / 2);
 		if (normalizedY > 1) normalizedY = 1;
 		if (normalizedY < -1) normalizedY = -1;
-		
+
 		// get the angle which the ball will fly
 		// ranges from -MAXBOUNCEANGLE to MAXBOUNCEANGLE
 		double bounceAngle = Math.toRadians(normalizedY * MAXBOUNCEANGLE);
-		
+
 		// calculate the horizontal speed based on where on the paddle
 		// we hit. Ranges from 0.7 to 1.0.
 		float ballVx = Math.abs((float)Math.sin(bounceAngle));
 		if (ballVx > 0 && ballVx < 0.7f) {
 			ballVx = 0.7f;
 		}
-		
+
 		// Go left if we're hitting the paddle on the right hand side
 		if (ballVelocity.getX() > 0) {
-			ballVx = -ballVx; 
+			ballVx = -ballVx;
 		}
 		// Calculate the vertical speed based on where on the paddle we hit.
 		// Since bounce angle is -75 to 75, it will range from -0.9659~ to 0.9659
@@ -284,14 +284,14 @@ public class Pong extends BasicGame {
 		waitingForKeyPress = true;
 		message = "You win! Press space to play again";
 	}
-		
+
 	@Override
 	public void render(GameContainer container, Graphics g)
 			throws SlickException {
 		g.fill(ball);
 		g.fill(paddleCPU);
 		g.fill(paddlePlayer);
-		
+
 		// center the score on top
 		String scoreString = scorePlayer + " - " + scoreCPU;
 		int scoreStringWidth = container.getDefaultFont().getWidth(scoreString);
@@ -310,13 +310,13 @@ public class Pong extends BasicGame {
 	/**
 	 * The main entry point of the game. Sets up the
 	 * application and gets the game loop going.
-	 * 
+	 *
 	 * @param args Any arguments passed
 	 */
 	public static void main(String[] args) {
 		try {
 			AppGameContainer app = new AppGameContainer(new Pong());
-			
+
 			app.setDisplayMode(width, height, fullscreen);
 			app.setTargetFrameRate(fpsLimit);
 			app.setShowFPS(false);
