@@ -7,6 +7,11 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+/**
+ * The Menu state of the Pong game
+ *
+ * @author Samuel Andersson
+ */
 public class MenuState extends BasicGameState {
 
 	@Override

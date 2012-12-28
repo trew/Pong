@@ -8,10 +8,9 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 /**
- * A classic game of Pong.
+ * The playing state of the Pong game
  *
  * @author Samuel Andersson
- *
  */
 public class GameplayState extends BasicGameState {
 
@@ -20,9 +19,6 @@ public class GameplayState extends BasicGameState {
 
 	/** The height of the game window */
 	private final int height;
-
-	/** The target frame rate */
-	private static int fpsLimit = 60;
 
 	/** The player's paddle */
 	private Rectangle paddlePlayer;

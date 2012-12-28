@@ -2,11 +2,15 @@ package trew;
 
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+/**
+ * A classic game of Pong.
+ *
+ * @author Samuel Andersson
+ *
+ */
 public class Pong extends StateBasedGame {
 
 	/** The width of the game window */
